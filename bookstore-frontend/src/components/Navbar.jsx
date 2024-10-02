@@ -1,8 +1,6 @@
 import React, { useState } from "react";
-import { CiUser } from "react-icons/ci";
+import { CiGlass, CiUser } from "react-icons/ci";
 import { Link, useNavigate } from "react-router-dom";
-import { FiSearch } from "react-icons/fi";
-import { AiOutlineMail, AiOutlineUserAdd } from "react-icons/ai";
 
 const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -12,11 +10,16 @@ const Navbar = () => {
     setSearchQuery(e.target.value);
   };
 
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    navigate.push(`/search?query=${searchQuery}`);
-  };
+  // const handleSearchSubmit = (e) => {
+  //   e.preventDefault();
+  //   navigate.push(`/search?query=${searchQuery}`);
+  // };
 
+  const user = localStorage.getItem("user")
+    ? JSON.parse(localStorage.getItem("user"))
+    : null;
+
+  console.log(user);
   return (
     <header className="bg-white shadow-md">
       <div className="container mx-auto flex flex-wrap items-center justify-between py-3 px-4">
@@ -26,7 +29,7 @@ const Navbar = () => {
           </Link>
         </div>
 
-        <div className="flex items-center w-full lg:w-auto">
+        {/* <div className="flex items-center w-full lg:w-auto">
           <form
             className="relative flex-grow lg:flex-grow-0"
             onSubmit={handleSearchSubmit}
@@ -45,22 +48,18 @@ const Navbar = () => {
               <FiSearch size={20} />
             </button>
           </form>
-        </div>
+        </div> */}
 
         <nav className="flex items-center space-x-4 mt-4 lg:mt-0">
           <Link to="/" className="text-gray-900 hover:text-teal-500">
             HOME
           </Link>
-          <Link
-            to="/category"
-            className="text-gray-900 hover:text-teal-500"
-          >
+          <Link to="/category" className="text-gray-900 hover:text-teal-500">
             CATEGORIES
           </Link>
           <Link to="/about" className="text-gray-900 hover:text-teal-500">
             ABOUT US
           </Link>
-          
         </nav>
 
         {/* <div className="flex items-center space-x-4 mt-4 lg:mt-0">
@@ -74,23 +73,55 @@ const Navbar = () => {
             <AiOutlineUserAdd size={24} />
           </Link>
         </div> */}
-       <ul className="flex space-x-4">
+        <ul className="flex space-x-4">
+          {user?.role == "USER" ? (
+            <ul className="flex space-x-4">
               <li className="nav-item">
-                <Link to="/login" className="flex items-center gap-2 px-2 text-gray-900 hover:text-teal-500">
+                <Link
+                  to="/"
+                  onClick={(e) => {
+                    localStorage.removeItem("user");
+                  }}
+                  className="flex items-center gap-2 px-2 text-gray-900 hover:text-teal-500"
+                >
                   <CiUser />
-                  Login
+                  Log Out
                 </Link>
               </li>
               <li className="nav-item">
-                <Link to="/register" className="px-2 text-gray-900 hover:text-teal-500">
+                <Link
+                  to="/user/profile"
+                  className="px-2 text-gray-900 hover:text-teal-500"
+                >
+                  Profile
+                </Link>
+              </li>
+            </ul>
+          ) : (
+            <ul className="flex space-x-4">
+              <li className="nav-item">
+                <Link
+                  to="/login"
+                  className="flex items-center gap-2 px-2 text-gray-900 hover:text-teal-500"
+                >
+                  <CiUser />
+                  Log in
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
+                  to="/register"
+                  className="px-2 text-gray-900 hover:text-teal-500"
+                >
                   Sign up
                 </Link>
               </li>
             </ul>
+          )}
+        </ul>
       </div>
     </header>
   );
-
 };
 
 export default Navbar;

@@ -2,7 +2,7 @@
 $hostName="localhost" ; // Machine on which MySQL Database is running
 $userName="root" ;             // Database User Login
 $password="#Xhrestha123" ;             // Database User Password
-$databaseName = "bca_android" ;       // Database name
+$databaseName = "bookstore" ;       // Database name
 $link=@mysqli_connect($hostName, $userName, $password);
 if(!isset($link))
 die("Database connection error!");
