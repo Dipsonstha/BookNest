@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { CiLocationOn } from "react-icons/ci";
-import { useParams, Link } from "react-router-dom";
+import { CiGlass, CiLocationOn } from "react-icons/ci";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const BookDetails = () => {
   const { id } = useParams(); // Get the book ID from the URL
+  const navigate = useNavigate(); // Use navigate from react-router-dom
   const [book, setBook] = useState(null); // State to hold the book details
   const [loading, setLoading] = useState(true); // Loading state
   const [error, setError] = useState(null); // Error state
@@ -32,8 +33,18 @@ const BookDetails = () => {
   // Handle Call Now button click
   const handleCallNow = () => {
     if (book) {
-      const phoneNumber = "123-456-7890"; // Replace with actual phone number from book data if available
+      const phoneNumber = book.phone_number; // Replace with actual phone number from book data if available
       setButtonText(phoneNumber); // Update button text to show phone number
+    }
+  };
+
+  // Redirect to the appropriate profile page
+  const handleProfileRedirect = () => {
+    const loggedInUserId = localStorage.getItem("id"); // Get logged-in user ID from local storage
+    if (book.user_id === loggedInUserId) {
+      navigate(`/user/profile/${loggedInUserId}`); // Redirect to user's own profile
+    } else {
+      navigate(`/seller/${book.user_id}`); // Redirect to seller's profile
     }
   };
 
@@ -50,6 +61,43 @@ const BookDetails = () => {
     return <p>Book not found.</p>;
   }
 
+  console.log(book);
+  function handleBookmark() {
+    // Parse user data from localStorage
+    const parsedUser = JSON.parse(localStorage.getItem("user"));
+
+    // Ensure parsedUser exists and contains an ID
+    if (!parsedUser || !parsedUser.id) {
+      alert("User not found. Please log in.");
+      return;
+    }
+
+    const value = {
+      book_id: id,
+      buyer_id: parsedUser.id, // Use parsed user ID
+      seller_id: book.userId,
+      Flag: 0,
+    };
+
+    // Make POST request to add bookmark
+    axios
+      .post(
+        "http://localhost/BookNest/bookstore-backend/book/addBookmark.php",
+        value
+      )
+      .then((res) => {
+        console.log(res.data.status);
+        if (res.data.status == "Failure") {
+          alert("Already Booked");
+        } else {
+          alert(res.data.status);
+        }
+      })
+      .catch((err) => {
+        console.error("Error adding bookmark:", err);
+      });
+  }
+
   return (
     <div className="container mx-auto mt-6 p-6 bg-white rounded-lg shadow-lg">
       {/* Header Section */}
@@ -59,11 +107,14 @@ const BookDetails = () => {
           <h2 className="text-xl font-semibold mt-1">{book.title}</h2>
           <div className="text-sm text-gray-500 flex items-center">
             <span className="mr-2">By:</span>
+            {book.userId}
             <Link
-              to={`/profile/${book.user_id}`} // Assuming user_id corresponds to the seller
+              to={`/seller/${book.userId}`} // Link for seller name, but will handle redirection
+              onClick={handleProfileRedirect} // Use the function for redirection
               className="text-blue-500 hover:underline"
             >
-              {book.userName} {/* Update to fetch and display seller name */}
+              {/* {book.userId} */}
+              {book.userName} {/* Display the seller's name */}
             </Link>
             <span className="mx-2">|</span>
             {/* <span>Posted: {book.postedDate}</span> */}
@@ -76,6 +127,12 @@ const BookDetails = () => {
           >
             {buttonText} {/* Show current button text */}
           </button>
+          <button
+            onClick={handleBookmark} // Placeholder for another button action
+            className="bg-blue-600 text-white py-2 px-4 rounded-lg shadow hover:bg-blue-700"
+          >
+            Book Now {/* Show current button text */}
+          </button>
         </div>
       </div>
 
@@ -84,9 +141,9 @@ const BookDetails = () => {
         {/* Image Section */}
         <div>
           <img
-            src={book.image ? `/uploads/${book.image}` : "notfound.jpg"} // Update image URL
+            src={book.image ? `/uploads/${book.image}` : "notfound.jpg"}
             alt={book.title}
-            className="w-full h-auto rounded-lg shadow-lg"
+            className="w-full max-w-md h-auto rounded-lg shadow-lg object-cover"
           />
         </div>
 
@@ -99,16 +156,18 @@ const BookDetails = () => {
               <strong>Condition:</strong> {book.book_condition}
             </p>
             <p className="text-gray-500">
-              <strong>Date:</strong> {book.postedDate}{" "}
-              {/* Ensure postedDate is in the book data */}
+              <strong>Date Posted:</strong>{" "}
+              {new Date(book.posted_date).toLocaleDateString()}{" "}
+              {/* Display formatted date */}
             </p>
+
             <p className="text-gray-500">
               <strong>Original Price:</strong> Rs {book.original_price}
             </p>
             <p className="text-gray-500 flex items-center">
               <CiLocationOn className="text-lg" />
               <span className="ml-2">
-                <strong>Location:</strong> {book.location}{" "}
+                <strong>Location:</strong> {book.address}{" "}
                 {/* Make sure location is fetched correctly */}
               </span>
             </p>

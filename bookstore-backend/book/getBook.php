@@ -2,14 +2,34 @@
 include("../config.php");
 $json = array();
 $success = true;
-$query = mysqli_query($link, "SELECT b.id as id, b.title as title, b.original_price,b.price, b.book_condition, b.image, b.description, c.name as c_name, s.name as s_name FROM book b inner join category c on b.category_id = c.id inner join subcategory s on b.subcategory_id = s.id;");
+
+// Updated SQL query to include user_id
+$query = mysqli_query($link, "
+    SELECT 
+        b.id as id, 
+        b.title as title, 
+        b.original_price, 
+        b.price, 
+        b.book_condition, 
+        b.image, 
+        b.description, 
+        c.name as c_name, 
+        s.name as s_name, 
+        b.user_id as user_id  -- Added this line to include user_id
+    FROM 
+        book b 
+    INNER JOIN 
+        category c ON b.category_id = c.id 
+    INNER JOIN 
+        subcategory s ON b.subcategory_id = s.id
+");
+
 if (!$query) {
 	$success = false;
 }
 
 $total_rows = mysqli_num_rows($query);
 if ($total_rows > 0) {
-
 	while ($row = mysqli_fetch_array($query)) {
 		// Append each row to the $json array
 		$json[] = [
@@ -22,6 +42,7 @@ if ($total_rows > 0) {
 			"description" => $row['description'],
 			"c_name" => $row['c_name'],
 			"s_name" => $row['s_name'],
+			"user_id" => $row['user_id'],  // Added user_id to JSON response
 		];
 	}
 }

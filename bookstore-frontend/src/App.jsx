@@ -14,6 +14,8 @@ import UserDashboard from "./pages/UserDashboard";
 import User from "./components/Admin/Users";
 import Ads from "./components/Admin/Ads";
 import BookDetails from "./pages/BookDetails";
+import SellerProfile from "./pages/SellerProfile";
+import NotificationPage from "./pages/NotificationPage";
 function App() {
   const router = createBrowserRouter([
     {
@@ -50,6 +52,10 @@ function App() {
           path: "books/:id",
           element: <BookDetails />,
         },
+        {
+          path: "seller/:id",
+          element: <SellerProfile />,
+        },
       ],
     },
     {
@@ -78,17 +84,20 @@ function App() {
     },
     {
       path: "/user",
-      element: <HomePage />, // You can use HomePage or create a separate layout for user routes
+      element: <HomePage />, // This acts as a layout for user-related routes
       children: [
         {
           path: "userDashboard",
           element: <UserDashboard />,
         },
         {
-          path: "profile",
+          path: "profile/:id", // Dynamic segment for user ID
           element: <UserProfile />,
         },
-
+        {
+          path: "notification",
+          element: <NotificationPage />,
+        },
         // Add more user-specific routes here
       ],
     },

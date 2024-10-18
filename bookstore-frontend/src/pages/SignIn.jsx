@@ -67,7 +67,7 @@ const SignIn = () => {
                 <input
                   id="email"
                   name="email"
-                  type="text"
+                  type="email"
                   placeholder="Please enter your Email"
                   value={user.email}
                   onChange={postForm}
@@ -86,11 +86,11 @@ const SignIn = () => {
                   required
                 />
               </div>
-              <div className="mod-login-forgot">
+              {/* <div className="mod-login-forgot">
                 <a href="#" className="link">
                   Forgot your password?
                 </a>
-              </div>
+              </div> */}
             </div>
             <div className="mod-login-col2">
               <div className="mod-login-btn">

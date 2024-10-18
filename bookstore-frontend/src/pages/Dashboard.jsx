@@ -5,12 +5,21 @@ import HowItWorks from "../components/HowItWorks";
 import Card from "../components/Card";
 import axios from "axios";
 const Dashboard = () => {
-  const user = localStorage.getItem("user")
-    ? JSON.parse(localStorage.getItem("user"))
-    : null;
+  const getUserFromLocalStorage = () => {
+    try {
+      const storedUser = localStorage.getItem("user");
+      return storedUser ? JSON.parse(storedUser) : null;
+    } catch (error) {
+      console.error("Error parsing user from localStorage:", error);
+      return null;
+    }
+  };
+
+  const user = getUserFromLocalStorage();
 
   const [book, setBook] = useState([]);
   const [pluse2, setpluse2] = useState([]);
+  const [fiction, setFiction] = useState([]);
   const [bachelor, setBachelor] = useState([]);
   useEffect(() => {
     const fetchBook = async () => {
@@ -22,8 +31,10 @@ const Dashboard = () => {
 
         console.log(response.data);
         const pluse2 = response.data.filter((d) => d.c_name == "+2");
+        const fiction = response.data.filter((d) => d.c_name == "Fiction");
         const bachelor = response.data.filter((d) => d.c_name == "Bachelor");
         setpluse2(pluse2);
+        setFiction(fiction);
         setBachelor(bachelor);
       } catch (error) {
         console.log("Error", error);
@@ -79,6 +90,10 @@ const Dashboard = () => {
           <div className="mt-9">
             <h1 className="text-4xl text-blue-500 pb-5">Bachelor Books</h1>
             <Card book={bachelor} />
+          </div>
+          <div className="mt-9">
+            <h1 className="text-4xl text-blue-500 pb-5">Bachelor Books</h1>
+            <Card book={fiction} />
           </div>
           <HowItWorks />
         </div>

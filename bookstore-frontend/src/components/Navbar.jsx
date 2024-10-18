@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { CiGlass, CiUser } from "react-icons/ci";
+import { CiGlass, CiLogout, CiUser } from "react-icons/ci";
 import { Link, useNavigate } from "react-router-dom";
+import { IoIosNotifications } from "react-icons/io";
 
 const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -14,10 +15,17 @@ const Navbar = () => {
   //   e.preventDefault();
   //   navigate.push(`/search?query=${searchQuery}`);
   // };
+  const getUserFromLocalStorage = () => {
+    try {
+      const storedUser = localStorage.getItem("user");
+      return storedUser ? JSON.parse(storedUser) : null;
+    } catch (error) {
+      console.error("Error parsing user from localStorage:", error);
+      return null;
+    }
+  };
 
-  const user = localStorage.getItem("user")
-    ? JSON.parse(localStorage.getItem("user"))
-    : null;
+  const user = getUserFromLocalStorage();
 
   console.log(user);
   return (
@@ -76,25 +84,49 @@ const Navbar = () => {
         <ul className="flex space-x-4">
           {user?.role == "USER" ? (
             <ul className="flex space-x-4">
-              <li className="nav-item">
+              <li className="nav-item relative group">
+                {" "}
+                {/* Add 'group' class here */}
                 <Link
                   to="/"
                   onClick={(e) => {
                     localStorage.removeItem("user");
                   }}
-                  className="flex items-center gap-2 px-2 text-gray-900 hover:text-teal-500"
+                  className="px-2 text-gray-900 text-2xl hover:text-purple-800"
+                >
+                  <CiLogout />
+                </Link>
+                <span className="absolute left-1/2 transform -translate-x-1/2 top-full mt-2 hidden group-hover:inline-block bg-gray-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+                  Logout
+                </span>
+              </li>
+
+              <li className="nav-item relative group">
+                {" "}
+                {/* Add 'group' class here */}
+                <Link
+                  to="/user/notification"
+                  className="px-2 text-gray-900 text-2xl hover:text-purple-800"
+                >
+                  <IoIosNotifications />
+                </Link>
+                <span className="absolute left-1/2 transform -translate-x-1/2 top-full mt-2 hidden group-hover:inline-block bg-gray-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+                  Notifications
+                </span>
+              </li>
+
+              <li className="nav-item relative group">
+                {" "}
+                {/* Add 'group' class here */}
+                <Link
+                  to="/user/profile/:id"
+                  className="px-2 text-gray-900 text-2xl hover:text-purple-800"
                 >
                   <CiUser />
-                  Log Out
                 </Link>
-              </li>
-              <li className="nav-item">
-                <Link
-                  to="/user/profile"
-                  className="px-2 text-gray-900 hover:text-teal-500"
-                >
+                <span className="absolute left-1/2 transform -translate-x-1/2 top-full mt-2 hidden group-hover:inline-block bg-gray-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
                   Profile
-                </Link>
+                </span>
               </li>
             </ul>
           ) : (
@@ -102,7 +134,7 @@ const Navbar = () => {
               <li className="nav-item">
                 <Link
                   to="/login"
-                  className="flex items-center gap-2 px-2 text-gray-900 hover:text-teal-500"
+                  className="flex items-center gap-2 px-2 text-gray-900 hover:text-purple-800"
                 >
                   <CiUser />
                   Log in
@@ -111,7 +143,7 @@ const Navbar = () => {
               <li className="nav-item">
                 <Link
                   to="/register"
-                  className="px-2 text-gray-900 hover:text-teal-500"
+                  className="px-2 text-gray-900 hover:text-purple-800"
                 >
                   Sign up
                 </Link>

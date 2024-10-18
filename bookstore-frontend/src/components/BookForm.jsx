@@ -57,6 +57,26 @@ const BookForm = () => {
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Get the logged-in user data from localStorage
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    if (!user || !user.id) {
+      alert("User ID not found. Please log in again.");
+      return;
+    }
+
+    if (
+      !book.title ||
+      !selectedCategory ||
+      !book.price ||
+      !book.book_condition ||
+      !book.description
+    ) {
+      alert("Please fill in all required fields");
+      return;
+    }
+
     const formData = new FormData();
 
     // Append all book details
@@ -64,9 +84,10 @@ const BookForm = () => {
       formData.append(key, book[key]);
     }
 
-    // Add the selected category and subcategory to formData
+    // Add the selected category, subcategory, and user ID to formData
     formData.append("category_id", selectedCategory);
     formData.append("subcategory_id", selectedSubcategory);
+    formData.append("user_id", user.id); // Add user ID dynamically
 
     // Append the image file if it exists
     if (image) {
@@ -104,30 +125,36 @@ const BookForm = () => {
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("An error occurred: " + error.message); // Display error message
+      alert("An error occurred: " + error.message);
     }
   };
 
   return (
-    <div className="p-6">
-      {" "}
-      <h2 className="text-center text-3xl pb-5">Post an Ad</h2>
-      <form onSubmit={handleSubmit} className="p-8 border-x-8 border-y-4">
-        {/* Form fields go here, same as before */}
-        <label className="block mb-2">
-          Title:
+    <div className="p-6 max-w-lg mx-auto">
+      <h2 className="text-center text-3xl pb-5 font-semibold">Post an Ad</h2>
+      <form
+        onSubmit={handleSubmit}
+        className="p-8 max-w-lg mx-auto bg-white shadow-lg rounded-lg border border-gray-300"
+      >
+        <h2 className="text-center text-2xl font-semibold mb-6">
+          Post Your Book
+        </h2>
+
+        <div className="mb-4">
+          <label className="block text-gray-700 mb-1">Title:</label>
           <input
             type="text"
             name="title"
             value={book.title}
             onChange={handleChange}
             required
-            className="border rounded p-2 w-full"
+            className="border rounded p-2 w-full focus:ring-2 focus:ring-blue-400 transition duration-200 ease-in-out"
+            placeholder="Enter book title"
           />
-        </label>
+        </div>
 
-        <label className="block mb-2">
-          Category:
+        <div className="mb-4">
+          <label className="block text-gray-700 mb-1">Category:</label>
           <select
             name="category_id"
             value={selectedCategory}
@@ -136,7 +163,7 @@ const BookForm = () => {
               setSubcategories([]); // Reset subcategories when category changes
             }}
             required
-            className="border rounded p-2 w-full"
+            className="border rounded p-2 w-full focus:ring-2 focus:ring-blue-400 transition duration-200 ease-in-out"
           >
             <option value="">Select a category</option>
             {categories.map((category) => (
@@ -145,15 +172,15 @@ const BookForm = () => {
               </option>
             ))}
           </select>
-        </label>
+        </div>
 
-        <label className="block mb-2">
-          Subcategory:
+        <div className="mb-4">
+          <label className="block text-gray-700 mb-1">Subcategory:</label>
           <select
             name="subcategory_id"
             value={selectedSubcategory}
             onChange={(e) => setSelectedSubcategory(e.target.value)}
-            className="border rounded p-2 w-full"
+            className="border rounded p-2 w-full focus:ring-2 focus:ring-blue-400 transition duration-200 ease-in-out"
           >
             <option value="">Select a subcategory</option>
             {subcategories.map((subcategory) => (
@@ -162,71 +189,78 @@ const BookForm = () => {
               </option>
             ))}
           </select>
-        </label>
+        </div>
 
-        <label className="block mb-2">
-          Original Price:
+        <div className="mb-4">
+          <label className="block text-gray-700 mb-1">Original Price:</label>
           <input
             type="text"
             step="0.01"
             name="original_price"
-            value={book.original_price}
             maxLength={5}
+            value={book.original_price}
             onChange={handleChange}
             required
-            className="border rounded p-2 w-full"
+            className="border rounded p-2 w-full focus:ring-2 focus:ring-blue-400 transition duration-200 ease-in-out"
+            placeholder="Enter original price"
           />
-        </label>
+        </div>
 
-        <label className="block mb-2">
-          Price:
+        <div className="mb-4">
+          <label className="block text-gray-700 mb-1">Price:</label>
           <input
             type="text"
             step="0.01"
             name="price"
+            maxLength={5}
             value={book.price}
             onChange={handleChange}
-            maxLength={5}
             required
-            className="border rounded p-2 w-full"
+            className="border rounded p-2 w-full focus:ring-2 focus:ring-blue-400 transition duration-200 ease-in-out"
+            placeholder="Enter selling price"
           />
-        </label>
+        </div>
 
-        <label className="block mb-2">
-          Book Condition:
+        <div className="mb-4">
+          <label className="block text-gray-700 mb-1">Book Condition:</label>
           <input
             type="text"
             name="book_condition"
             value={book.book_condition}
             onChange={handleChange}
             required
-            className="border rounded p-2 w-full"
+            className="border rounded p-2 w-full focus:ring-2 focus:ring-blue-400 transition duration-200 ease-in-out"
+            placeholder="Describe the book condition"
           />
-        </label>
+        </div>
 
-        <label className="block mb-2">
-          Description:
+        <div className="mb-4">
+          <label className="block text-gray-700 mb-1">Description:</label>
           <textarea
             name="description"
             value={book.description}
             onChange={handleChange}
             required
-            className="border rounded p-2 w-full"
+            className="border rounded p-2 w-full focus:ring-2 focus:ring-blue-400 transition duration-200 ease-in-out"
+            placeholder="Write a brief description"
           ></textarea>
-        </label>
+        </div>
 
-        <label className="block mb-2">
-          Image:
+        <div className="mb-4">
+          <label className="block text-gray-700 mb-1">Image:</label>
           <input
             type="file"
             name="image"
             accept="image/*"
             onChange={(e) => setImage(e.target.files[0])}
-            className="border rounded p-2 w-full"
+            className="border rounded p-2 w-full focus:ring-2 focus:ring-blue-400 transition duration-200 ease-in-out"
           />
-        </label>
+        </div>
 
-        <button type="submit" className="bg-blue-500 text-white rounded p-2">
+        <button
+          type="submit"
+          className="bg-indigo-600 text-white rounded p-2 w-full hover:bg-indigo-500 transition duration-200 transform hover:scale-105"
+        >
           Submit
         </button>
       </form>

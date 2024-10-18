@@ -73,7 +73,7 @@ const SignUp = () => {
                   <input
                     onChange={getData}
                     name="email"
-                    type="text"
+                    type="email"
                     placeholder="Please enter your Email"
                     value={user.email}
                     required
